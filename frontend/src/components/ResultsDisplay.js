@@ -221,7 +221,7 @@ function ResultsDisplay({ result, loading, error }) {
     // Use typewriter effect
     const { displayedText, isComplete } = useTypewriter(
         responseText,
-        20, // typing speed in ms - balanced for readability
+        0.01, // typing speed in ms - balanced for readability
         enableTypewriter
     );
 

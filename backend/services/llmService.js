@@ -28,8 +28,8 @@ const ANSWER_SYSTEM_PROMPT = `You are an AI document search assistant. Answer th
 
 Rules:
 1. Answer ONLY using information from the provided documents
-2. If the answer is not found in the documents, say "Not found in documents"
-3. Add citations like ([filename]) next to each claim or fact
+2. If the answer is not found in the documents, respond with ONLY "I couldn't find any relevant information for your query." - do NOT mention any document names or add citations
+3. When you DO find relevant information, add citations like ([filename]) next to each claim or fact
 4. Be concise and accurate
 5. Do not make up information or hallucinate`;
 
@@ -277,7 +277,7 @@ If no documents are relevant, return: []`;
                 { role: 'system', content: SELECTOR_SYSTEM_PROMPT },
                 { role: 'user', content: userMessage }
             ],
-            model: 'llama-3.1-8b-instant',  // Use smaller model for selection
+            model: 'meta-llama/llama-4-scout-17b-16e-instruct',  // Llama 4 Scout for fast selection
             temperature: 0.1,
             max_tokens: 256,
             response_format: { type: 'json_object' }
@@ -354,7 +354,7 @@ Remember to:
                 { role: 'system', content: ANSWER_SYSTEM_PROMPT },
                 { role: 'user', content: userMessage }
             ],
-            model: 'llama-3.3-70b-versatile',
+            model: 'meta-llama/llama-4-maverick-17b-128e-instruct',  // Llama 4 Maverick - best free tier model with 10M context
             temperature: 0.3,
             max_tokens: 1024
         }, { signal: controller.signal });
@@ -398,7 +398,7 @@ async function generateAnswerSmall(query, selectedDocs) {
             { role: 'system', content: ANSWER_SYSTEM_PROMPT },
             { role: 'user', content: `${context}\n\nQuery: ${query}` }
         ],
-        model: 'llama-3.1-8b-instant',
+        model: 'meta-llama/llama-4-scout-17b-16e-instruct',  // Fallback to Scout if rate limited
         temperature: 0.3,
         max_tokens: 512
     });
