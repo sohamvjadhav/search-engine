@@ -149,3 +149,4 @@ If you chose to use the local MySQL on EC2:
    ```bash
    mysql -u root -p < schema.sql
    ```
+ 

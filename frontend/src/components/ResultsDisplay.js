@@ -213,6 +213,7 @@ function StructuredContent({ text }) {
 
 function ResultsDisplay({ result, loading, error }) {
     const [enableTypewriter, setEnableTypewriter] = useState(true);
+    const [copied, setCopied] = useState(false);
 
     // Get the response text
     const responseText = result?.response || '';
@@ -220,11 +221,21 @@ function ResultsDisplay({ result, loading, error }) {
     // Use typewriter effect
     const { displayedText, isComplete } = useTypewriter(
         responseText,
-        0.0001, // typing speed in ms (faster)
+        20, // typing speed in ms - balanced for readability
         enableTypewriter
     );
 
-    // Disable typewriter after completion to prevent re-triggering
+    // Handle copy to clipboard
+    const handleCopy = async () => {
+        if (!responseText) return;
+        try {
+            await navigator.clipboard.writeText(responseText);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    };
     useEffect(() => {
         if (isComplete) {
             setEnableTypewriter(false);
@@ -288,9 +299,32 @@ function ResultsDisplay({ result, loading, error }) {
                     <span className="ai-label">AI Response</span>
                     {result.metadata && (
                         <span className="metadata">
-                            Searched {result.metadata.documentsSearched} documents in {(result.metadata.processingTimeMs / 1000).toFixed(1)}s
+                            Searched {result.metadata.documentsSearched} docs • Selected {result.metadata.documentsSelected} • {result.metadata.cached ? '⚡ Cached' : `${(result.metadata.processingTimeMs / 1000).toFixed(1)}s`}
                         </span>
                     )}
+                    <button
+                        className={`copy-button ${copied ? 'copied' : ''}`}
+                        onClick={handleCopy}
+                        title={copied ? 'Copied!' : 'Copy to clipboard'}
+                        disabled={!isComplete}
+                    >
+                        {copied ? (
+                            <>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20 6L9 17l-5-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <span>Copied!</span>
+                            </>
+                        ) : (
+                            <>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <span>Copy</span>
+                            </>
+                        )}
+                    </button>
                 </div>
                 <div className="result-content">
                     {enableTypewriter && !isComplete ? (
@@ -302,6 +336,27 @@ function ResultsDisplay({ result, loading, error }) {
                         <StructuredContent text={responseText} />
                     )}
                 </div>
+
+                {/* Sources Section */}
+                {result.sources && result.sources.length > 0 && (
+                    <div className="result-sources">
+                        <div className="sources-header">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            <span>Sources ({result.sources.length})</span>
+                        </div>
+                        <div className="sources-list">
+                            {result.sources.map((source, idx) => (
+                                <div key={idx} className="source-tag" title={source.filename}>
+                                    <span className="source-type">{source.filetype}</span>
+                                    <span className="source-name">{source.filename.length > 30 ? source.filename.substring(0, 30) + '...' : source.filename}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

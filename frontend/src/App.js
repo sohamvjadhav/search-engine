@@ -40,6 +40,7 @@ function App() {
 
             setResult({
                 response: response.data.response,
+                sources: response.data.sources,
                 metadata: response.data.metadata
             });
         } catch (err) {
@@ -69,9 +70,11 @@ function App() {
                     </svg>
                 </div>
                 <div className="header-right">
-                    {stats && stats.documentsIngested > 0 && (
-                        <div className="doc-count">
+                    {stats && (
+                        <div className="doc-count" title={`Storage: ${stats.storageMode} | Groq: ${stats.groqConfigured ? '✓' : '✗'}${stats.cache ? ` | Cache: ${stats.cache.size}` : ''}`}>
                             {stats.documentsIngested} documents indexed
+                            {stats.storageMode === 'filesystem' && <span className="mode-badge">FS</span>}
+                            {stats.storageMode === 'db' && <span className="mode-badge db">DB</span>}
                         </div>
                     )}
                     <div className="icon-btn" title="About">
