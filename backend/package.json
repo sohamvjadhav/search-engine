@@ -1,0 +1,32 @@
+{
+  "name": "document-search-backend",
+  "version": "1.0.0",
+  "description": "AI-powered document search and analysis backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.978.0",
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.13.4",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.0.0",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "groq-sdk": "^0.37.0",
+    "mysql2": "^3.6.5",
+    "officeparser": "^4.0.5",
+    "pdf-parse": "^1.1.1",
+    "replicate": "^1.4.0"
+  },
+  "keywords": [
+    "document-search",
+    "ai",
+    "llm",
+    "semantic-search"
+  ],
+  "author": "",
+  "license": "MIT"
+}

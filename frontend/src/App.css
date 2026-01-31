@@ -1,0 +1,141 @@
+/* App Styles - Matching existing design */
+
+.main-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 20px;
+    flex-shrink: 0;
+}
+
+.model-selector {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    color: #676767;
+    cursor: pointer;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.model-selector:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.doc-count {
+    font-size: 13px;
+    color: #8e8e8e;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 6px 12px;
+    border-radius: 16px;
+}
+
+.icon-btn {
+    color: #676767;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.icon-btn:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.profile-icon {
+    width: 32px;
+    height: 32px;
+    background: #000000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+}
+
+/* Center Content */
+.center-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    padding-bottom: 15vh;
+    overflow-y: auto;
+    transition: all 0.3s ease;
+}
+
+.center-content.has-results {
+    justify-content: flex-start;
+    padding-top: 20px;
+    padding-bottom: 40px;
+}
+
+h1 {
+    font-size: 36px;
+    font-weight: 500;
+    color: #2D2D2D;
+    margin-bottom: 32px;
+    text-align: center;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 28px;
+        padding: 0 20px;
+    }
+
+    .header {
+        padding: 10px 15px;
+    }
+
+    .model-selector span {
+        font-size: 14px;
+    }
+
+    .doc-count {
+        display: none;
+    }
+
+    .center-content {
+        padding: 15px;
+        padding-bottom: 10vh;
+    }
+}
