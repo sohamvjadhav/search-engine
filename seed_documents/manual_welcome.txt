@@ -1,0 +1,10 @@
+Render deployment note:
+
+This repository includes a seed document so the hosted application has at least one indexed file.
+
+If you are reading this from the deployed app, ingestion and search are working in filesystem mode.
+
+To use your own corpus:
+1. Replace files in the seed_documents folder.
+2. Redeploy the service.
+3. Trigger POST /api/ingest.
