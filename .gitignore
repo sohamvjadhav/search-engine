@@ -33,4 +33,3 @@ yarn-error.log*
 deploy-package.tar.gz
 deploy-update.tar.gz
 search-engine.zip
-generated_documents/

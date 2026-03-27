@@ -1,0 +1,67 @@
+Project Requirements Document
+Version: 1.0
+Date: January 2026
+
+EXECUTIVE SUMMARY
+This document outlines the requirements for the AI-Powered Document Search System. The project aims to create an intelligent search interface that can understand and query across multiple document formats.
+
+PROJECT OBJECTIVES
+1. Enable semantic search across large document collections
+2. Support multiple file formats (TXT, PDF, CSV, PPTX)
+3. Provide natural language responses to user queries
+4. Create an intuitive, modern user interface
+
+FUNCTIONAL REQUIREMENTS
+
+FR-001: Document Ingestion
+The system must be able to read and extract text from the following file formats:
+- Plain text files (.txt)
+- PDF documents (.pdf)
+- Comma-separated values (.csv)
+- PowerPoint presentations (.pptx)
+
+FR-002: Text Storage
+All extracted text must be stored in a MySQL database with the following schema:
+- Document ID (auto-increment)
+- Filename
+- File type
+- Full text content
+- Timestamp
+
+FR-003: Search Functionality
+Users must be able to enter natural language queries and receive comprehensive responses that synthesize information from all relevant documents.
+
+FR-004: User Interface
+The frontend must provide:
+- A prominent search input field
+- Clear display of search results
+- Loading indicators during processing
+- Error handling and user feedback
+
+NON-FUNCTIONAL REQUIREMENTS
+
+NFR-001: Performance
+- Document ingestion should process at least 10 documents per second
+- Search queries should return within 30 seconds
+- The UI should remain responsive during all operations
+
+NFR-002: Scalability
+- The system should handle up to 500 documents
+- MySQL storage should be optimized for large text content
+
+NFR-003: Compatibility
+- Must run on x86 and ARM architectures
+- Compatible with Oracle Cloud Always Free tier
+- Works with XAMPP MySQL installation
+
+BUDGET AND TIMELINE
+Estimated completion: 2 weeks
+Budget: API costs only (Gemini free tier)
+
+STAKEHOLDERS
+- Development Team
+- Academic Supervisors
+- End Users (Researchers)
+
+APPROVAL
+This document requires approval from all stakeholders before development begins.

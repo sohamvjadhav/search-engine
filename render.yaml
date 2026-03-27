@@ -13,7 +13,7 @@ services:
       - key: PORT
         value: 5001
       - key: DOCUMENTS_PATH
-        value: ../seed_documents
+        value: ../generated_documents
       - key: GROQ_SELECTOR_MODEL
         value: llama-3.1-8b-instant
       - key: GROQ_ANSWER_MODEL

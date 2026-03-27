@@ -1,0 +1,61 @@
+Meeting Notes: Project Kickoff
+Date: January 15, 2026
+Attendees: Soham, Dr. Patel, Team Members
+
+AGENDA
+1. Project overview and objectives
+2. Technology stack decisions
+3. Timeline and milestones
+4. Role assignments
+
+DISCUSSION POINTS
+
+Project Overview:
+- We are building an AI-powered document search system
+- The goal is to demonstrate semantic understanding capabilities
+- Target audience: Academic researchers and students
+- Must be impressive for live demonstration
+
+Technology Decisions:
+- Frontend: React (familiar to team, fast development)
+- Backend: Node.js with Express (JavaScript throughout)
+- Database: MySQL (compatible with XAMPP and Oracle Cloud)
+- AI: Google Gemini (largest free context window)
+
+Why Gemini?
+- 1 million token context window
+- Generous free tier
+- Fast response times
+- Good at following complex instructions
+
+Timeline:
+- Week 1: Backend development and document extraction
+- Week 2: Frontend UI and integration
+- Week 3: Testing and optimization
+- Week 4: Presentation preparation
+
+Milestones:
+1. M1 (Jan 20): Document ingestion working
+2. M2 (Jan 25): Search API functional
+3. M3 (Jan 30): Frontend complete
+4. M4 (Feb 5): Demo ready
+
+Role Assignments:
+- Soham: Lead developer (full-stack)
+- Dr. Patel: Advisor and reviewer
+- Team: Testing and documentation
+
+DECISIONS MADE
+1. Will use glassmorphism design (modern, impressive)
+2. No authentication required for demo
+3. Focus on quality of AI responses over speed
+4. Create sample documents if real ones unavailable
+
+ACTION ITEMS
+- [ ] Set up Git repository
+- [ ] Create project folder structure
+- [ ] Obtain Gemini API key
+- [ ] Install XAMPP locally
+
+NEXT MEETING
+January 18, 2026 - Progress check
