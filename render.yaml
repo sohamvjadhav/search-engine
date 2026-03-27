@@ -2,10 +2,10 @@ services:
   - type: web
     name: document-search-backend
     env: node
-    rootDir: backend
+    rootDir: .
     plan: free
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: npm install --prefix backend
+    startCommand: npm --prefix backend start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
