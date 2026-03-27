@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: document-search-backend
+    env: node
+    rootDir: backend
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PORT
+        value: 5001
+      - key: DOCUMENTS_PATH
+        value: ../generated_documents
+      - key: GROQ_SELECTOR_MODEL
+        value: llama-3.1-8b-instant
+      - key: GROQ_ANSWER_MODEL
+        value: llama-3.3-70b-versatile
+      - key: GROQ_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        sync: false

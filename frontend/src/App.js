@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import SearchBar from './components/SearchBar';
 import ResultsDisplay from './components/ResultsDisplay';
 import './App.css';
+
+const API_BASE_URL = (process.env.REACT_APP_API_BASE_URL || '').trim();
+const getApiUrl = (path) => `${API_BASE_URL}${path}`;
 
 function App() {
     const [query, setQuery] = useState('');
@@ -11,15 +14,23 @@ function App() {
     const [error, setError] = useState(null);
     const [stats, setStats] = useState(null);
     const [hasSearched, setHasSearched] = useState(false);
+    const abortControllerRef = useRef(null);
+    const requestIdRef = useRef(0);
 
     // Fetch document stats on mount
     useEffect(() => {
         fetchStats();
+
+        return () => {
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+        };
     }, []);
 
     const fetchStats = async () => {
         try {
-            const response = await axios.get('/api/health');
+            const response = await axios.get(getApiUrl('/api/health'));
             setStats(response.data);
         } catch (err) {
             console.log('Could not fetch stats:', err.message);
@@ -27,16 +38,31 @@ function App() {
     };
 
     const handleSearch = async (searchQuery) => {
-        if (!searchQuery.trim()) return;
+        const trimmedQuery = searchQuery.trim();
+        if (!trimmedQuery) return;
+
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
+
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const currentRequestId = ++requestIdRef.current;
 
         setLoading(true);
         setError(null);
         setHasSearched(true);
 
         try {
-            const response = await axios.post('/api/search', {
-                query: searchQuery
+            const response = await axios.post(getApiUrl('/api/search'), {
+                query: trimmedQuery
+            }, {
+                signal: controller.signal
             });
+
+            if (currentRequestId !== requestIdRef.current) {
+                return;
+            }
 
             setResult({
                 response: response.data.response,
@@ -44,19 +70,33 @@ function App() {
                 metadata: response.data.metadata
             });
         } catch (err) {
+            if (err.code === 'ERR_CANCELED') {
+                return;
+            }
+
+            if (currentRequestId !== requestIdRef.current) {
+                return;
+            }
+
             const errorMessage = err.response?.data?.message || err.message || 'An error occurred';
             setError(errorMessage);
             setResult(null);
         } finally {
-            setLoading(false);
+            if (currentRequestId === requestIdRef.current) {
+                setLoading(false);
+            }
         }
     };
 
     const handleNewSearch = () => {
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
+        }
         setHasSearched(false);
         setResult(null);
         setError(null);
         setQuery('');
+        setLoading(false);
     };
 
     return (

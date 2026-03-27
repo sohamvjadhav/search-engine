@@ -1,6 +1,65 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ResultsDisplay.css';
 
+function buildSourceLookup(sources = []) {
+    const lookup = new Map();
+    sources.forEach((source, index) => {
+        if (!source?.filename) return;
+        lookup.set(source.filename.toLowerCase(), index);
+    });
+    return lookup;
+}
+
+function renderInlineContent(text, sourceLookup) {
+    if (!text) return null;
+
+    const citationPattern = /(\(\[[^\]]+\]\)|\[[^\]]+\])/g;
+    const citationMatches = text.split(citationPattern).filter(Boolean);
+
+    return citationMatches.map((fragment, fragmentIndex) => {
+        const citationMatch = fragment.match(/^\(\[([^\]]+)\]\)$|^\[([^\]]+)\]$/);
+
+        if (citationMatch) {
+            const citationName = (citationMatch[1] || citationMatch[2] || '').trim();
+            const sourceIndex = sourceLookup.get(citationName.toLowerCase());
+
+            if (typeof sourceIndex === 'number') {
+                return (
+                    <span
+                        key={`citation-${fragmentIndex}-${citationName}`}
+                        className="rd-citation"
+                        title={`Source: ${citationName}`}
+                    >
+                        [{sourceIndex + 1}]
+                    </span>
+                );
+            }
+
+            return (
+                <span
+                    key={`citation-missing-${fragmentIndex}-${citationName}`}
+                    className="rd-citation rd-citation-missing"
+                    title={`Source not listed: ${citationName}`}
+                >
+                    {fragment}
+                </span>
+            );
+        }
+
+        const boldParts = fragment.split(/(\*\*.*?\*\*)/g).filter(Boolean);
+        return (
+            <React.Fragment key={`text-${fragmentIndex}`}>
+                {boldParts.map((part, partIndex) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={`bold-${fragmentIndex}-${partIndex}`}>{part.slice(2, -2)}</strong>;
+                    }
+                    return <React.Fragment key={`plain-${fragmentIndex}-${partIndex}`}>{part}</React.Fragment>;
+                })}
+            </React.Fragment>
+        );
+    });
+}
+
 // Typewriter hook for animated text display
 function useTypewriter(text, speed = 15, enabled = true) {
     const [displayedText, setDisplayedText] = useState('');
@@ -139,19 +198,19 @@ function parseStructuredContent(text) {
 }
 
 // Render a single section
-function Section({ section }) {
+function Section({ section, sourceLookup }) {
     const content = section.content.join('\n');
 
     switch (section.type) {
         case 'header':
             const HeaderTag = `h${section.level}`;
-            return <HeaderTag className="rd-header">{content}</HeaderTag>;
+            return <HeaderTag className="rd-header">{renderInlineContent(content, sourceLookup)}</HeaderTag>;
 
         case 'bullet':
             return (
                 <ul className="rd-list rd-bullet-list">
                     {section.content.map((item, idx) => (
-                        <li key={idx}>{item}</li>
+                        <li key={idx}>{renderInlineContent(item, sourceLookup)}</li>
                     ))}
                 </ul>
             );
@@ -160,7 +219,7 @@ function Section({ section }) {
             return (
                 <ol className="rd-list rd-numbered-list" start={section.startNum}>
                     {section.content.map((item, idx) => (
-                        <li key={idx}>{item}</li>
+                        <li key={idx}>{renderInlineContent(item, sourceLookup)}</li>
                     ))}
                 </ol>
             );
@@ -168,7 +227,7 @@ function Section({ section }) {
         case 'blockquote':
             return (
                 <blockquote className="rd-blockquote">
-                    {content}
+                    {renderInlineContent(content, sourceLookup)}
                 </blockquote>
             );
 
@@ -177,35 +236,29 @@ function Section({ section }) {
             // Check if it's a bold line (wrapped in **)
             const boldMatch = content.match(/^\*\*(.+?)\*\*$/);
             if (boldMatch) {
-                return <p className="rd-paragraph rd-bold-line">{boldMatch[1]}</p>;
+                return <p className="rd-paragraph rd-bold-line">{renderInlineContent(boldMatch[1], sourceLookup)}</p>;
             }
-            // Check for inline bold
-            const parts = content.split(/(\*\*.*?\*\*)/g);
             return (
                 <p className="rd-paragraph">
-                    {parts.map((part, idx) => {
-                        if (part.startsWith('**') && part.endsWith('**')) {
-                            return <strong key={idx}>{part.slice(2, -2)}</strong>;
-                        }
-                        return part;
-                    })}
+                    {renderInlineContent(content, sourceLookup)}
                 </p>
             );
     }
 }
 
 // Structured Content Renderer
-function StructuredContent({ text }) {
+function StructuredContent({ text, sources }) {
     const sections = parseStructuredContent(text);
+    const sourceLookup = buildSourceLookup(sources);
 
     if (!sections || sections.length === 0) {
-        return <p className="rd-paragraph">{text}</p>;
+        return <p className="rd-paragraph">{renderInlineContent(text, sourceLookup)}</p>;
     }
 
     return (
         <div className="rd-structured-content">
             {sections.map((section, idx) => (
-                <Section key={idx} section={section} />
+                <Section key={idx} section={section} sourceLookup={sourceLookup} />
             ))}
         </div>
     );
@@ -221,7 +274,7 @@ function ResultsDisplay({ result, loading, error }) {
     // Use typewriter effect
     const { displayedText, isComplete } = useTypewriter(
         responseText,
-        0.01, // typing speed in ms - balanced for readability
+        2,
         enableTypewriter
     );
 
@@ -333,7 +386,7 @@ function ResultsDisplay({ result, loading, error }) {
                             <span className="typewriter-cursor"></span>
                         </div>
                     ) : (
-                        <StructuredContent text={responseText} />
+                        <StructuredContent text={responseText} sources={result.sources} />
                     )}
                 </div>
 
@@ -349,7 +402,8 @@ function ResultsDisplay({ result, loading, error }) {
                         </div>
                         <div className="sources-list">
                             {result.sources.map((source, idx) => (
-                                <div key={idx} className="source-tag" title={source.filename}>
+                                <div id={`source-${idx}`} key={idx} className="source-tag" title={source.filename}>
+                                    <span className="source-index">[{idx + 1}]</span>
                                     <span className="source-type">{source.filetype}</span>
                                     <span className="source-name">{source.filename.length > 30 ? source.filename.substring(0, 30) + '...' : source.filename}</span>
                                 </div>

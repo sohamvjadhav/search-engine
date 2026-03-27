@@ -12,6 +12,8 @@ const groq = new Groq({
 
 // Timeout for Groq API calls (30 seconds)
 const GROQ_TIMEOUT_MS = 30000;
+const GROQ_SELECTOR_MODEL = process.env.GROQ_SELECTOR_MODEL || 'llama-3.1-8b-instant';
+const GROQ_ANSWER_MODEL = process.env.GROQ_ANSWER_MODEL || 'llama-3.3-70b-versatile';
 
 // System prompt for Stage A: Document selection
 const SELECTOR_SYSTEM_PROMPT = `You are a document relevance selector. Your task is to analyze a list of documents and select the most relevant ones for a given query.
@@ -277,7 +279,7 @@ If no documents are relevant, return: []`;
                 { role: 'system', content: SELECTOR_SYSTEM_PROMPT },
                 { role: 'user', content: userMessage }
             ],
-            model: 'meta-llama/llama-4-scout-17b-16e-instruct',  // Llama 4 Scout for fast selection
+            model: GROQ_SELECTOR_MODEL,
             temperature: 0.1,
             max_tokens: 256,
             response_format: { type: 'json_object' }
@@ -354,7 +356,7 @@ Remember to:
                 { role: 'system', content: ANSWER_SYSTEM_PROMPT },
                 { role: 'user', content: userMessage }
             ],
-            model: 'meta-llama/llama-4-maverick-17b-128e-instruct',  // Llama 4 Maverick - best free tier model with 10M context
+            model: GROQ_ANSWER_MODEL,
             temperature: 0.3,
             max_tokens: 1024
         }, { signal: controller.signal });
@@ -378,8 +380,8 @@ Remember to:
         }
 
         // If rate limit, try with smaller context
-        if (error.message.includes('rate_limit') || error.message.includes('413')) {
-            console.log('Rate limit hit, retrying with smaller context...');
+        if (error.message.includes('rate_limit') || error.message.includes('413') || error.message.includes('model_not_found')) {
+            console.log('Primary model unavailable/limited, retrying with smaller context...');
             return await generateAnswerSmall(query, selectedDocs);
         }
 
@@ -398,7 +400,7 @@ async function generateAnswerSmall(query, selectedDocs) {
             { role: 'system', content: ANSWER_SYSTEM_PROMPT },
             { role: 'user', content: `${context}\n\nQuery: ${query}` }
         ],
-        model: 'meta-llama/llama-4-scout-17b-16e-instruct',  // Fallback to Scout if rate limited
+        model: GROQ_SELECTOR_MODEL,
         temperature: 0.3,
         max_tokens: 512
     });

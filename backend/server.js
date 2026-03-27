@@ -8,9 +8,31 @@ const searchRoutes = require('./routes/searchRoutes');
 const app = express();
 const PORT = process.env.PORT || 5001; // 5001 to avoid macOS AirPlay conflict
 
+function getAllowedOrigins() {
+    const rawOrigins = process.env.CORS_ORIGINS || '';
+    const parsedOrigins = rawOrigins
+        .split(',')
+        .map(origin => origin.trim())
+        .filter(Boolean);
+
+    if (parsedOrigins.length > 0) {
+        return parsedOrigins;
+    }
+
+    return ['http://localhost:3000', 'http://127.0.0.1:3000'];
+}
+
+const allowedOrigins = getAllowedOrigins();
+
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+            return;
+        }
+        callback(new Error('Not allowed by CORS'));
+    },
     methods: ['GET', 'POST'],
     credentials: true
 }));
@@ -82,6 +104,7 @@ async function startServer() {
         console.log(`   GET  http://localhost:${PORT}/api/documents`);
         console.log(`   POST http://localhost:${PORT}/api/ingest`);
         console.log(`   POST http://localhost:${PORT}/api/search`);
+        console.log(`\nCORS allowed origins: ${allowedOrigins.join(', ')}`);
         console.log('\n========================================\n');
     }).on('error', (err) => {
         if (err.code === 'EADDRINUSE') {
