@@ -4,7 +4,7 @@
     <stop offset="0%" stop-color="#E6E6FA"/>
     <stop offset="40%" stop-color="#FFDAB9"/>
     <stop offset="70%" stop-color="#FF8C69"/>
-    <stop offset="100%" stop-color="#A0522D"/>
+    <stop offset="100%" stop-color="#D2691E"/>
   </linearGradient>
 </defs>
 <rect width="1600" height="900" fill="url(#bgGradient)"/>
