@@ -38,8 +38,8 @@
     resize: none;
     min-height: 48px;
     max-height: 150px;
-    padding: 0 12px;
-    line-height: 48px;
+    padding: 14px 12px;
+    line-height: 20px;
     overflow: hidden;
     display: flex;
     align-items: center;
