@@ -271,7 +271,8 @@
 
     .search-input {
         font-size: 15px;
-        padding: 0 8px;
+        padding: 12px 8px;
+        text-align: left;
     }
 
     .attach-button {
