@@ -224,6 +224,7 @@
 
 .history-item:hover {
     background-color: #f4f4f4;
+    border-radius: 8px;
 }
 
 .history-item svg {
