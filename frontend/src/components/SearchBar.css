@@ -47,6 +47,7 @@
 
 .search-input::placeholder {
     color: #555555;
+    text-align: left;
 }
 
 .search-input:disabled {
